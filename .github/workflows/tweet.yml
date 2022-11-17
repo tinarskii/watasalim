@@ -1,0 +1,36 @@
+name: Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */12 * * *"
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  watch:
+    types: [started]
+
+jobs:
+  run:
+    name: Tweet
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'yarn'
+
+    - name: Install Dependencies 📦
+      run: yarn
+
+    - name: Post to twitter 🕊️
+      env:
+        API_KEY: ${{ secrets.API_KEY }}
+        API_KEY_SECRET: ${{ secrets.API_KEY_SECRET }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      run: node tweet.js
